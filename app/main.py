@@ -68,6 +68,27 @@ def startup_db_seeding():
     db = SessionLocal()
     try:
         # 2. Seed Default Admin Users
+        user_shopnorv = db.query(models.AdminUser).filter(models.AdminUser.email == "shopnorv@gmail.com").first()
+        if not user_shopnorv:
+            user_shopnorv = models.AdminUser(
+                name="NORV Super Admin",
+                email="shopnorv@gmail.com",
+                hashed_password=auth.get_password_hash("Norv786$$"),
+                role="Super Admin",
+                status="Active",
+                last_active="Never",
+                avatar="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop"
+            )
+            db.add(user_shopnorv)
+            db.commit()
+            print("Successfully seeded shopnorv@gmail.com.")
+        else:
+            user_shopnorv.hashed_password = auth.get_password_hash("Norv786$$")
+            user_shopnorv.role = "Super Admin"
+            user_shopnorv.status = "Active"
+            db.commit()
+            print("Successfully updated shopnorv@gmail.com password.")
+
         if db.query(models.AdminUser).count() == 0:
             superadmin = models.AdminUser(
                 name="Ali Khubaib (You)",
@@ -99,7 +120,7 @@ def startup_db_seeding():
             )
             db.add_all([superadmin, superadmin_alt, standard_admin])
             db.commit()
-            print("Successfully seeded Admin Users.")
+            print("Successfully seeded legacy Admin Users.")
 
         # 3. Seed Default Store Settings
         if db.query(models.StoreSettings).count() == 0:
