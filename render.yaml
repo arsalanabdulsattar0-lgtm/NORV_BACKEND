@@ -13,6 +13,8 @@ services:
         generateValue: true
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 1440
+      - key: ALLOWED_ORIGINS
+        value: https://admin.shopnorv.com,https://shopnorv.com,https://www.shopnorv.com
 
 databases:
   - name: norv-db
