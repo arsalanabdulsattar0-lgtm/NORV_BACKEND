@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base, SessionLocal
 from . import models, auth
-from .routers import auth as auth_router, products, orders, categories, reviews, coupons, blogs, settings, users
+from .routers import auth as auth_router, products, orders, categories, reviews, coupons, blogs, settings, users, dashboard
 import random
 import os
 
@@ -49,6 +49,7 @@ app.include_router(coupons.router)
 app.include_router(blogs.router)
 app.include_router(settings.router)
 app.include_router(users.router)
+app.include_router(dashboard.router)
 
 @app.get("/")
 def read_root():
