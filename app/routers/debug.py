@@ -53,3 +53,34 @@ def test_smtp():
         result["error"] = f"GENERAL ERROR: {str(e)}"
     
     return result
+
+
+@router.get("/trace-order-creation")
+def trace_order_creation():
+    """Manually test mailer formatting directly to see if it throws error"""
+    try:
+        order_data = {
+            "id": "N-DEBUG-999",
+            "name": "Arsalan Debug",
+            "email": "arsalansidhu28@gmail.com",
+            "phone": "+923220017592",
+            "address": "Mandi Usman Wala",
+            "city": "Lahore",
+            "paymentMethod": "COD",
+            "total": 1200,
+            "items": [
+                {
+                    "productId": 1,
+                    "name": "OUD Mist Body Wash",
+                    "quantity": 1,
+                    "size": "100ml",
+                    "price": 1200
+                }
+            ]
+        }
+        send_order_confirmation_email(order_data)
+        return {"status": "Mailer formatted successfully"}
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc()}
+
