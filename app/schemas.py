@@ -96,15 +96,15 @@ class OrderItem(BaseModel):
 
 class OrderBase(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     phone: str
     address: str
     city: str
     payment_method: str
-    items: List[OrderItem]
+    items: List[Any]
     total: int
     status: Optional[str] = "Processing"
-    estimated_delivery: str
+    estimated_delivery: Optional[str] = "3-5 Working Days"
     tracking_number: Optional[str] = "Not Dispatched"
     customer_notes: Optional[str] = ""
     admin_notes: Optional[str] = ""
@@ -114,12 +114,12 @@ class OrderCreate(OrderBase):
 
 class OrderUpdate(BaseModel):
     name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     city: Optional[str] = None
     payment_method: Optional[str] = None
-    items: Optional[List[OrderItem]] = None
+    items: Optional[List[Any]] = None
     total: Optional[int] = None
     status: Optional[str] = None
     estimated_delivery: Optional[str] = None

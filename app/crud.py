@@ -139,9 +139,15 @@ def update_order(db: Session, order_id: str, order_update: schemas.OrderUpdate):
     if not db_order:
         return None
     
-    update_data = order_update.dict(exclude_unset=True)
+    update_data = order_update.model_dump(exclude_unset=True)
     if "items" in update_data and update_data["items"]:
-        update_data["items"] = [item.dict() for item in update_data["items"]]
+        serialized = []
+        for item in update_data["items"]:
+            if isinstance(item, dict):
+                serialized.append(item)
+            else:
+                serialized.append(item.dict())
+        update_data["items"] = serialized
         
     for key, val in update_data.items():
         setattr(db_order, key, val)
