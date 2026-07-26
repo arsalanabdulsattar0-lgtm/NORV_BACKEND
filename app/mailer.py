@@ -167,6 +167,72 @@ def send_order_confirmation_email(order: dict):
         subject=f"NORV: Order Confirmed #{oid} 🛍️",
         html=_base_template(content, preview_text=f"Your NORV order #{oid} is confirmed!")
     )
+    
+    # Send shop alert notification to admin (shopnorv@gmail.com)
+    send_admin_new_order_alert_email(order)
+
+
+def send_admin_new_order_alert_email(order: dict):
+    items_html = _items_rows(order.get("items", []))
+    total      = order.get("total", 0)
+    oid        = order.get("id", "—")
+    name       = order.get("name", "Customer")
+    email      = order.get("email", "")
+    address    = order.get("address", "")
+    city       = order.get("city", "")
+    phone      = order.get("phone", "")
+    payment    = order.get("paymentMethod", order.get("payment_method", "COD"))
+    notes      = order.get("customer_notes", order.get("customerNotes", "")) or "No notes"
+
+    content = f"""
+    <h2 style="margin:0 0 8px;font-size:22px;color:#EF4444;font-weight:400;">
+      🚨 New Order Received!
+    </h2>
+    <p style="margin:0 0 28px;color:{MUTED};font-size:14px;">
+      An order has been placed on the storefront. Details below:
+    </p>
+
+    <!-- Order ID Banner -->
+    <div style="background:#0D0D0D;border:1px solid {GOLD};border-radius:8px;padding:16px 20px;margin-bottom:28px;text-align:center;">
+      <span style="font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;">Order ID</span><br>
+      <strong style="font-size:20px;color:{GOLD};letter-spacing:1px;">#{oid}</strong>
+    </div>
+
+    <!-- Items Table -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+      <tr>
+        <td style="font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;padding-bottom:10px;">Item</td>
+        <td style="font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;padding-bottom:10px;text-align:right;">Amount</td>
+      </tr>
+      {items_html}
+      <tr>
+        <td style="padding-top:16px;font-size:16px;font-weight:700;color:{TEXT};">Total Revenue</td>
+        <td style="padding-top:16px;font-size:18px;font-weight:700;color:{GOLD};text-align:right;">Rs. {total:,}</td>
+      </tr>
+    </table>
+
+    <!-- Customer Details -->
+    <div style="background:#0D0D0D;border-radius:8px;padding:20px 24px;margin-top:24px;">
+      <p style="margin:0 0 10px;font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;">Customer Profile</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">👤 Name: <strong>{name}</strong> ({email})</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">📍 Address: {address}, {city}</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">📞 Phone: {phone}</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">💳 Method: <strong style="color:{GOLD};">{payment}</strong></p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">📝 Notes: <em>{notes}</em></p>
+    </div>
+
+    <div style="margin-top:24px;text-align:center;">
+      <a href="https://admin.shopnorv.com" style="display:inline-block;background:{GOLD};color:#000;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;letter-spacing:1px;">
+        OPEN ADMIN PANEL
+      </a>
+    </div>"""
+
+    _send(
+        to_email=settings.SMTP_USERNAME, # Send directly to shopnorv@gmail.com
+        subject=f"🚨 [New Order] #{oid} - Rs. {total:,} by {name}",
+        html=_base_template(content, preview_text=f"New order #{oid} has been placed!")
+    )
+
 
 
 # ─────────────────────────────────────────────────────────────
