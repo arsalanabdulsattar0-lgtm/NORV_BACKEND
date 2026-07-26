@@ -119,14 +119,20 @@ def get_order(db: Session, order_id: str):
     return db.query(models.Order).filter(models.Order.id == order_id).first()
 
 def create_order(db: Session, order: schemas.OrderCreate):
-    order_data = order.dict()
+    order_data = order.model_dump()
     if not order_data.get("id"):
         import random
         order_data["id"] = f"NRV-{random.randint(100000, 999999)}"
         
     order_data["date"] = datetime.now().strftime("%B %d, %Y %I:%M %p")
-    # Convert order items Pydantic models to JSON serializable structures
-    order_data["items"] = [item.dict() for item in order.items]
+    # Safely serialize items — they may already be dicts or Pydantic models
+    serialized_items = []
+    for item in order_data.get("items", []):
+        if isinstance(item, dict):
+            serialized_items.append(item)
+        else:
+            serialized_items.append(item.dict())
+    order_data["items"] = serialized_items
     
     db_order = models.Order(**order_data)
     db.add(db_order)
