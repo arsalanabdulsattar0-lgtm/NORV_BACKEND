@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, JSON, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, JSON, Text, DateTime
+import datetime
 from .database import Base
 
 class AdminUser(Base):
@@ -122,3 +123,12 @@ class StoreSettings(Base):
     tax_rate_percent = Column(Float, default=16.0)
     is_maintenance_mode = Column(Boolean, default=False)
     low_stock_alert_threshold = Column(Integer, default=10)
+
+class Subscriber(Base):
+    __tablename__ = "subscribers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    bundle = Column(String, nullable=True)  # Which bundle they signed up for
+    timestamp = Column(String, nullable=False)  # ISO string timestamp
+    status = Column(String, default="Active")  # "Active" or "Unsubscribed"

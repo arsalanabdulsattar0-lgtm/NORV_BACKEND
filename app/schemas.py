@@ -225,3 +225,21 @@ class StoreSettingsOut(StoreSettingsBase):
 
     class Config:
         from_attributes = True
+
+# Subscriber Schemas
+class SubscriberCreate(BaseModel):
+    email: EmailStr
+    bundle: Optional[str] = None
+
+class SubscriberUpdate(BaseModel):
+    status: Optional[str] = None
+
+class SubscriberOut(BaseModel):
+    id: int
+    email: str
+    bundle: Optional[str] = None
+    timestamp: str
+    status: str
+
+    class Config:
+        from_attributes = True

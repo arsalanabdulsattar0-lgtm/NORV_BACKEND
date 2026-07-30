@@ -353,3 +353,79 @@ def send_order_delivered_email(order: dict):
         subject=f"NORV: Order #{oid} Delivered! Thank You 💛",
         html=_base_template(content, preview_text=f"Your NORV order has been delivered!")
     )
+
+
+# ─────────────────────────────────────────────────────────────
+# 5. SUBSCRIBER CONFIRMATION  (sent when user signs up for launch notify)
+# ─────────────────────────────────────────────────────────────
+def send_subscriber_confirmation_email(email: str, bundle: str):
+    bundle_name = bundle or "our upcoming collection"
+
+    content = f"""
+    <h2 style="margin:0 0 8px;font-size:22px;color:{TEXT};font-weight:400;">
+      You're on the list! <span style="color:{GOLD};">✓</span>
+    </h2>
+    <p style="margin:0 0 28px;color:{MUTED};font-size:14px;">
+      We've reserved your spot in the launch queue for:
+    </p>
+
+    <!-- Bundle Banner -->
+    <div style="background:#0D0D0D;border:1px solid {GOLD};border-radius:8px;padding:20px 24px;margin-bottom:28px;text-align:center;">
+      <span style="font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;">Bundle Collection</span><br>
+      <strong style="font-size:20px;color:{GOLD};letter-spacing:1px;">{bundle_name}</strong>
+    </div>
+
+    <div style="background:#0D0D0D;border-radius:8px;padding:20px 24px;margin-bottom:28px;">
+      <p style="margin:0 0 10px;font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;">What happens next?</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">📧 You'll receive an email the moment this bundle launches.</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">🎯 Early access with exclusive launch pricing.</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">⚡ Limited stock — subscribers get first priority.</p>
+    </div>
+
+    <div style="margin-top:24px;text-align:center;">
+      <a href="https://shopnorv.com" style="display:inline-block;background:{GOLD};color:#000;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;letter-spacing:1px;">
+        BROWSE NORV STORE
+      </a>
+    </div>
+
+    <p style="margin:28px 0 0;font-size:13px;color:{MUTED};line-height:1.6;">
+      Thank you for your interest in NORV Atelier. ✨<br>
+      For queries: <a href="mailto:shopnorv@gmail.com" style="color:{GOLD};">shopnorv@gmail.com</a>
+    </p>"""
+
+    _send(
+        to_email=email,
+        subject="NORV: You're on the launch list! 🎯",
+        html=_base_template(content, preview_text="Your spot in the NORV launch queue is confirmed!")
+    )
+
+
+def send_admin_new_subscriber_alert_email(email: str, bundle: str, total_subscribers: int):
+    bundle_name = bundle or "General"
+
+    content = f"""
+    <h2 style="margin:0 0 8px;font-size:22px;color:#10B981;font-weight:400;">
+      🔔 New Bundle Subscriber!
+    </h2>
+    <p style="margin:0 0 28px;color:{MUTED};font-size:14px;">
+      A new subscriber has joined the launch notification queue.
+    </p>
+
+    <div style="background:#0D0D0D;border:1px solid {GOLD};border-radius:8px;padding:20px 24px;margin-bottom:20px;">
+      <p style="margin:0 0 10px;font-size:11px;letter-spacing:2px;color:{MUTED};text-transform:uppercase;">Subscriber Details</p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">📧 Email: <strong style="color:{GOLD};">{email}</strong></p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">📦 Bundle: <strong>{bundle_name}</strong></p>
+      <p style="margin:4px 0;color:{TEXT};font-size:14px;">👥 Total Subscribers: <strong style="color:{GOLD};">{total_subscribers}</strong></p>
+    </div>
+
+    <div style="margin-top:24px;text-align:center;">
+      <a href="https://admin-norv.vercel.app" style="display:inline-block;background:{GOLD};color:#000;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;letter-spacing:1px;">
+        VIEW SUBSCRIBERS
+      </a>
+    </div>"""
+
+    _send(
+        to_email=settings.SMTP_USERNAME,
+        subject=f"🔔 [New Subscriber] {email} — {bundle_name}",
+        html=_base_template(content, preview_text=f"New launch subscriber: {email}")
+    )
