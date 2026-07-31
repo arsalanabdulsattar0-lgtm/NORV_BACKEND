@@ -1,14 +1,41 @@
 """
-Quick SMTP debug endpoint - remove after testing
+Debug & Admin Utility endpoints
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 from ..mailer import send_order_confirmation_email
+from ..database import get_db
+from .. import models, auth
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from ..config import settings
 
 router = APIRouter(prefix="/api/debug", tags=["Debug"])
+
+
+@router.delete("/purge-all-test-data")
+def purge_all_test_data(
+    db: Session = Depends(get_db),
+    current_user: models.AdminUser = Depends(auth.get_current_user)
+):
+    """
+    Admin-only: Wipe ALL orders, reviews, and subscribers from the database.
+    Use this to clean demo/test data before going live.
+    """
+    deleted_orders = db.query(models.Order).delete()
+    deleted_reviews = db.query(models.Review).delete()
+    deleted_subscribers = db.query(models.Subscriber).delete()
+    db.commit()
+    return {
+        "status": "success",
+        "message": "All test data purged. Admin panel is clean and ready for production.",
+        "deleted": {
+            "orders": deleted_orders,
+            "reviews": deleted_reviews,
+            "subscribers": deleted_subscribers
+        }
+    }
 
 @router.get("/smtp-test")
 def test_smtp():
