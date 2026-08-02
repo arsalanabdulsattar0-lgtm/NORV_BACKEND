@@ -70,6 +70,41 @@ def startup_db_seeding():
     
     db = SessionLocal()
     try:
+        # 1.5 Auto-migrate missing columns in PostgreSQL database
+        from sqlalchemy import text
+        alter_queries = [
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS homepage_image VARCHAR;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS hover_image VARCHAR;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS images JSON;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS video_url VARCHAR;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS original_price INTEGER;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS savings VARCHAR;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS badge VARCHAR;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS reviews_count INTEGER DEFAULT 0;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS rating FLOAT DEFAULT 5.0;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT TRUE;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS key_ingredients JSON;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS how_to_use TEXT;",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS sizes JSON;",
+            "ALTER TABLE categories ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'Active';",
+            "ALTER TABLE categories ADD COLUMN IF NOT EXISTS products_count INTEGER DEFAULT 0;",
+            "ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_notes TEXT;",
+            "ALTER TABLE orders ADD COLUMN IF NOT EXISTS admin_notes TEXT;",
+            "ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number VARCHAR DEFAULT 'Not Dispatched';",
+            "ALTER TABLE orders ADD COLUMN IF NOT EXISTS estimated_delivery VARCHAR DEFAULT '3-5 Working Days';",
+            "ALTER TABLE reviews ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;",
+            "ALTER TABLE reviews ADD COLUMN IF NOT EXISTS verified BOOLEAN DEFAULT TRUE;",
+            "ALTER TABLE reviews ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'Approved';",
+            "ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS bundle VARCHAR;",
+            "ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'Active';"
+        ]
+        for query in alter_queries:
+            try:
+                db.execute(text(query))
+            except Exception as ex:
+                print(f"Migration notice: {ex}")
+        db.commit()
+
         # 2. Check and clean dummy data
         # If the database contains the dummy product "Acne Control Face Wash" and total products <= 7,
         # we consider it dummy data and wipe it out.
