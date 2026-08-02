@@ -135,3 +135,14 @@ class Subscriber(Base):
     bundle = Column(String, nullable=True)  # Which bundle they signed up for
     timestamp = Column(String, nullable=False)  # ISO string timestamp
     status = Column(String, default="Active")  # "Active" or "Unsubscribed"
+
+class MediaAsset(Base):
+    __tablename__ = "media_assets"
+
+    id = Column(String, primary_key=True, index=True)
+    url = Column(Text, nullable=False)
+    name = Column(String, nullable=False)
+    type = Column(String, default="image")
+    size = Column(String, nullable=False)
+    category = Column(String, default="products")
+    uploaded_at = Column(String, nullable=False)

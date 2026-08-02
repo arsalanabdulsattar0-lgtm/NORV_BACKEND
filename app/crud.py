@@ -293,3 +293,32 @@ def update_settings(db: Session, settings_update: schemas.StoreSettingsBase):
     db.commit()
     db.refresh(db_settings)
     return db_settings
+
+# ==================== MEDIA ASSETS CRUD ====================
+def get_media_assets(db: Session):
+    return db.query(models.MediaAsset).all()
+
+def create_media_asset(db: Session, asset: schemas.MediaAssetCreate):
+    import time, random
+    asset_id = asset.id or f"asset_{int(time.time())}_{random.randint(100, 999)}"
+    db_asset = models.MediaAsset(
+        id=asset_id,
+        url=asset.url,
+        name=asset.name,
+        type=asset.type or "image",
+        size=asset.size,
+        category=asset.category or "products",
+        uploaded_at=asset.uploaded_at
+    )
+    db.add(db_asset)
+    db.commit()
+    db.refresh(db_asset)
+    return db_asset
+
+def delete_media_asset(db: Session, asset_id: str):
+    db_asset = db.query(models.MediaAsset).filter(models.MediaAsset.id == asset_id).first()
+    if db_asset:
+        db.delete(db_asset)
+        db.commit()
+        return True
+    return False

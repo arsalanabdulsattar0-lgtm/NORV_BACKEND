@@ -246,3 +246,21 @@ class SubscriberOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+# MediaAsset Schemas
+class MediaAssetBase(BaseModel):
+    url: str
+    name: str
+    type: Optional[str] = "image"
+    size: str
+    category: Optional[str] = "products"
+    uploaded_at: str
+
+class MediaAssetCreate(MediaAssetBase):
+    id: Optional[str] = None
+
+class MediaAssetOut(MediaAssetBase):
+    id: str
+
+    class Config:
+        from_attributes = True
