@@ -15,11 +15,11 @@ def get_dashboard_stats(
 ):
     # Fetch all orders to compute stats
     orders = db.query(models.Order).all()
-    total_revenue = sum(order.total for order in orders)
+    total_revenue = sum((order.total or 0) for order in orders)
     total_orders = len(orders)
     
     # Extract unique customer emails
-    unique_customers = len(set(order.email.lower() for order in orders if order.email))
+    unique_customers = len(set(order.email.lower() for order in orders if order and order.email))
     
     # Count pending and completed orders
     pending_orders_count = sum(1 for o in orders if o.status in ["Processing", "Shipped", "Out for Delivery"])
@@ -43,7 +43,7 @@ def get_dashboard_stats(
     
     for order in orders:
         order_month = None
-        if order.date:
+        if order and order.date:
             for i, m_name in enumerate(months_full):
                 if m_name in order.date:
                     order_month = month_names[i]
@@ -57,7 +57,7 @@ def get_dashboard_stats(
         if not order_month:
             order_month = "Jun"
             
-        monthly_sales[order_month] += order.total
+        monthly_sales[order_month] += (order.total or 0)
         
     return {
         "total_revenue": total_revenue,

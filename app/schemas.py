@@ -44,20 +44,20 @@ class AdminUserOut(AdminUserBase):
 
 # Product Schemas
 class ProductBase(BaseModel):
-    name: str
-    price: int
+    name: Optional[str] = "Unnamed Product"
+    price: Optional[int] = 0
     original_price: Optional[int] = None
     savings: Optional[str] = None
     badge: Optional[str] = None
-    sizes: List[str]
+    sizes: Optional[List[str]] = []
     rating: Optional[float] = 5.0
     reviews_count: Optional[int] = 0
     in_stock: Optional[bool] = True
-    category: str
-    description: str
-    key_ingredients: List[str]
-    how_to_use: str
-    image: str
+    category: Optional[str] = "Grooming"
+    description: Optional[str] = ""
+    key_ingredients: Optional[List[str]] = []
+    how_to_use: Optional[str] = ""
+    image: Optional[str] = ""
     homepage_image: Optional[str] = None
     hover_image: Optional[str] = None
     images: Optional[List[str]] = None
@@ -74,9 +74,9 @@ class ProductOut(ProductBase):
 
 # Category Schemas
 class CategoryBase(BaseModel):
-    name: str
-    slug: str
-    image: str
+    name: Optional[str] = ""
+    slug: Optional[str] = ""
+    image: Optional[str] = ""
     status: Optional[str] = "Active"
     products_count: Optional[int] = 0
 
@@ -91,21 +91,21 @@ class CategoryOut(CategoryBase):
 
 # Order Schemas
 class OrderItem(BaseModel):
-    productId: int
-    name: str
-    quantity: int
-    size: str
-    price: int
+    productId: Optional[int] = 0
+    name: Optional[str] = ""
+    quantity: Optional[int] = 1
+    size: Optional[str] = ""
+    price: Optional[int] = 0
 
 class OrderBase(BaseModel):
-    name: str
-    email: str
-    phone: str
-    address: str
-    city: str
-    payment_method: str
-    items: List[Any]
-    total: int
+    name: Optional[str] = "Client"
+    email: Optional[str] = ""
+    phone: Optional[str] = ""
+    address: Optional[str] = ""
+    city: Optional[str] = ""
+    payment_method: Optional[str] = "COD"
+    items: Optional[List[Any]] = []
+    total: Optional[int] = 0
     status: Optional[str] = "Processing"
     estimated_delivery: Optional[str] = "3-5 Working Days"
     tracking_number: Optional[str] = "Not Dispatched"

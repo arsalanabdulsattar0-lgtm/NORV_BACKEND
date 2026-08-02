@@ -12,32 +12,31 @@ app = FastAPI(
     version="1.0.0"
 )
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
 # Configure CORS Middleware for cross-origin portals access
-allowed_origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
-    "https://norv-grooming.vercel.app",
-    "https://admin-norv.vercel.app",
-    "https://norvfe-9s7v.vercel.app",
-    "https://norvfe.vercel.app",
-]
-
-# Allow additional origins from environment variables if set
-env_origins = os.getenv("ALLOWED_ORIGINS")
-if env_origins:
-    allowed_origins.extend([o.strip() for o in env_origins.split(",") if o.strip()])
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    origin = request.headers.get("origin", "*")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal Server Error: {str(exc)}"},
+        headers={
+            "Access-Control-Allow-Origin": origin if origin else "*",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
 
 # Mount API Routers
 app.include_router(auth_router.router)
