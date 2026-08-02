@@ -75,12 +75,17 @@ def update_product(db: Session, product_id: int, product_update: schemas.Product
     return db_product
 
 def delete_product(db: Session, product_id: int):
-    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
-    if db_product:
-        db.delete(db_product)
-        db.commit()
-        return True
-    return False
+    try:
+        db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+        if db_product:
+            db.delete(db_product)
+            db.commit()
+            return True
+        return False
+    except Exception as e:
+        db.rollback()
+        print(f"Error deleting product {product_id}: {e}")
+        return False
 
 # ==================== CATEGORIES CRUD ====================
 def get_categories(db: Session):

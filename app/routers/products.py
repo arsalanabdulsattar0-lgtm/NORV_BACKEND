@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from typing import List
 from ..database import get_db
@@ -45,5 +45,5 @@ def delete_existing_product(
 ):
     deleted = crud.delete_product(db, product_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return None
+        raise HTTPException(status_code=404, detail=f"Product {product_id} not found or deletion failed")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
