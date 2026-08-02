@@ -43,7 +43,5 @@ def delete_existing_product(
     db: Session = Depends(get_db),
     current_user: models.AdminUser = Depends(auth.get_current_user)
 ):
-    deleted = crud.delete_product(db, product_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail=f"Product {product_id} not found or deletion failed")
+    crud.delete_product(db, product_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

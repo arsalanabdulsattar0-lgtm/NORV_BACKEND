@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Response
 from sqlalchemy.orm import Session
 from typing import List
 from ..database import get_db
@@ -106,7 +106,5 @@ def delete_existing_order(
     db: Session = Depends(get_db),
     current_user: models.AdminUser = Depends(auth.get_current_user)
 ):
-    deleted = crud.delete_order(db, order_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Order not found")
-    return None
+    crud.delete_order(db, order_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

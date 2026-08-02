@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from typing import List
 from ..database import get_db
@@ -35,7 +35,5 @@ def delete_existing_review(
     db: Session = Depends(get_db),
     current_user: models.AdminUser = Depends(auth.get_current_user)
 ):
-    deleted = crud.delete_review(db, review_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Review not found")
-    return None
+    crud.delete_review(db, review_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
