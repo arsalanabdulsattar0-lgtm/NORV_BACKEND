@@ -58,7 +58,10 @@ class ProductBase(BaseModel):
     key_ingredients: List[str]
     how_to_use: str
     image: str
+    homepage_image: Optional[str] = None
+    hover_image: Optional[str] = None
     images: Optional[List[str]] = None
+    video_url: Optional[str] = None
 
 class ProductCreate(ProductBase):
     pass

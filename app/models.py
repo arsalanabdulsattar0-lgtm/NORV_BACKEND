@@ -32,7 +32,10 @@ class Product(Base):
     key_ingredients = Column(JSON, nullable=False)  # list of strings
     how_to_use = Column(Text, nullable=False)
     image = Column(String, nullable=False)
+    homepage_image = Column(String, nullable=True)
+    hover_image = Column(String, nullable=True)
     images = Column(JSON, nullable=True)  # list of image URLs
+    video_url = Column(String, nullable=True)
 
 class Category(Base):
     __tablename__ = "categories"
