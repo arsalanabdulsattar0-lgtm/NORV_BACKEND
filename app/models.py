@@ -132,9 +132,31 @@ class Subscriber(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    bundle = Column(String, nullable=True)  # Which bundle they signed up for
-    timestamp = Column(String, nullable=False)  # ISO string timestamp
-    status = Column(String, default="Active")  # "Active" or "Unsubscribed"
+    source = Column(String, default="Launch Queue")
+    status = Column(String, default="Subscribed")
+    subscribed_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class AnalyticsEvent(Base):
+    __tablename__ = "analytics_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(String, index=True, nullable=False)
+    event_type = Column(String, nullable=False)
+    session_id = Column(String, nullable=False)
+    visitor_id = Column(String, nullable=False)
+    user_id = Column(String, nullable=True)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    page = Column(String, nullable=False)
+    product_id = Column(String, nullable=True)
+    product_name = Column(String, nullable=True)
+    device = Column(String, default="Mobile")
+    browser = Column(String, default="Chrome")
+    os = Column(String, default="Android")
+    country = Column(String, default="Pakistan")
+    city = Column(String, default="Lahore")
+    referrer = Column(String, default="Direct")
+    campaign = Column(String, nullable=True)
+    properties = Column(JSON, nullable=True)
 
 class MediaAsset(Base):
     __tablename__ = "media_assets"

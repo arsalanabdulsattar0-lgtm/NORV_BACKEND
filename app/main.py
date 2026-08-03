@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base, SessionLocal
 from . import models, auth
-from .routers import auth as auth_router, products, orders, categories, reviews, coupons, blogs, settings, users, dashboard, debug, subscribers, media
+from .routers import auth as auth_router, products, orders, categories, reviews, coupons, blogs, settings, users, dashboard, debug, subscribers, media, analytics
 import random
 import os
 
@@ -62,6 +62,7 @@ app.include_router(dashboard.router)
 app.include_router(debug.router)
 app.include_router(subscribers.router)
 app.include_router(media.router)
+app.include_router(analytics.router)
 
 
 @app.get("/")

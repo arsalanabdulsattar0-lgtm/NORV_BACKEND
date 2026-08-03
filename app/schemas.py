@@ -264,3 +264,24 @@ class MediaAssetOut(MediaAssetBase):
 
     class Config:
         from_attributes = True
+
+# Analytics Event Schemas
+class AnalyticsEventCreate(BaseModel):
+    eventId: Optional[str] = None
+    eventType: str
+    sessionId: str
+    visitorId: str
+    userId: Optional[str] = None
+    timestamp: Optional[int] = None
+    page: str
+    productId: Optional[Any] = None
+    productName: Optional[str] = None
+    device: Optional[str] = "Mobile"
+    browser: Optional[str] = "Chrome"
+    os: Optional[str] = "Android"
+    country: Optional[str] = "Pakistan"
+    city: Optional[str] = "Lahore"
+    referrer: Optional[str] = "Direct"
+    campaign: Optional[str] = None
+    properties: Optional[Dict[str, Any]] = {}
+
