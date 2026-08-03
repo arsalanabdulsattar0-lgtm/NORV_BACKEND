@@ -99,7 +99,7 @@ async def chat_completion(req: ChatRequest):
             resp = await client.post(
                 "https://openrouter.ai/api/v1/chat/completions",
                 json={
-                    "model": "openai/gpt-4o-mini",
+                    "model": "deepseek/deepseek-chat",
                     "messages": messages_payload
                 },
                 headers=headers,
