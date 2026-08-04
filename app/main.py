@@ -185,14 +185,22 @@ def startup_db_seeding():
         from sqlalchemy import text, inspect as sa_inspect
         inspector = sa_inspect(db.get_bind())
 
-        # subscribers.source — added after initial table creation
+        # subscribers table — all columns added after initial creation
         existing_sub_cols = [c["name"] for c in inspector.get_columns("subscribers")]
-        if "source" not in existing_sub_cols:
-            db.execute(text("ALTER TABLE subscribers ADD COLUMN source VARCHAR DEFAULT 'Launch Queue'"))
-            db.commit()
-            print("Migration: added 'source' column to subscribers table.")
-        else:
-            print("Migration check: 'source' column already exists in subscribers table.")
+
+        subscriber_migrations = [
+            ("source",        "ALTER TABLE subscribers ADD COLUMN source VARCHAR DEFAULT 'Launch Queue'"),
+            ("status",        "ALTER TABLE subscribers ADD COLUMN status VARCHAR DEFAULT 'Subscribed'"),
+            ("subscribed_at", "ALTER TABLE subscribers ADD COLUMN subscribed_at TIMESTAMP DEFAULT NOW()"),
+        ]
+
+        for col_name, sql in subscriber_migrations:
+            if col_name not in existing_sub_cols:
+                db.execute(text(sql))
+                db.commit()
+                print(f"Migration: added '{col_name}' column to subscribers table.")
+            else:
+                print(f"Migration check: '{col_name}' column already exists in subscribers table.")
 
     except Exception as e:
         db.rollback()
