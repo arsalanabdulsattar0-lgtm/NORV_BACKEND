@@ -185,7 +185,7 @@ def startup_db_seeding():
         from sqlalchemy import text, inspect as sa_inspect
         inspector = sa_inspect(db.get_bind())
 
-        # subscribers table — all columns added after initial creation
+        # subscribers table — add missing new columns
         existing_sub_cols = [c["name"] for c in inspector.get_columns("subscribers")]
 
         subscriber_migrations = [
@@ -202,9 +202,23 @@ def startup_db_seeding():
             else:
                 print(f"Migration check: '{col_name}' column already exists in subscribers table.")
 
+        # Fix legacy NOT NULL constraints on old columns (timestamp, bundle)
+        # These were from the original schema and must be relaxed so new inserts work
+        col_info = {c["name"]: c for c in inspector.get_columns("subscribers")}
+
+        if "timestamp" in col_info and not col_info["timestamp"].get("nullable", True):
+            db.execute(text("ALTER TABLE subscribers ALTER COLUMN timestamp DROP NOT NULL"))
+            db.execute(text("ALTER TABLE subscribers ALTER COLUMN timestamp SET DEFAULT ''"))
+            db.commit()
+            print("Migration: removed NOT NULL constraint from subscribers.timestamp.")
+
+        if "bundle" in col_info and not col_info["bundle"].get("nullable", True):
+            db.execute(text("ALTER TABLE subscribers ALTER COLUMN bundle DROP NOT NULL"))
+            db.commit()
+            print("Migration: removed NOT NULL constraint from subscribers.bundle.")
+
     except Exception as e:
         db.rollback()
         print(f"Error seeding database: {e}")
     finally:
         db.close()
-
