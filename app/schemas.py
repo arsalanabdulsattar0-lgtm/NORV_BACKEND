@@ -232,7 +232,7 @@ class StoreSettingsOut(StoreSettingsBase):
 # Subscriber Schemas
 class SubscriberCreate(BaseModel):
     email: EmailStr
-    bundle: Optional[str] = None
+    source: Optional[str] = "Launch Queue"
 
 class SubscriberUpdate(BaseModel):
     status: Optional[str] = None
@@ -240,9 +240,9 @@ class SubscriberUpdate(BaseModel):
 class SubscriberOut(BaseModel):
     id: int
     email: str
-    bundle: Optional[str] = None
-    timestamp: str
+    source: Optional[str] = "Launch Queue"
     status: str
+    subscribed_at: Optional[Any] = None
 
     class Config:
         from_attributes = True

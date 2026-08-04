@@ -23,19 +23,16 @@ def subscribe(
     ).first()
 
     if existing:
-        # Already subscribed — re-activate if unsubscribed and update bundle
-        existing.status = "Active"
-        if payload.bundle:
-            existing.bundle = payload.bundle
+        # Already subscribed — re-activate if unsubscribed
+        existing.status = "Subscribed"
         db.commit()
         db.refresh(existing)
         return existing
 
     subscriber = models.Subscriber(
         email=payload.email,
-        bundle=payload.bundle,
-        timestamp=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
-        status="Active"
+        source=payload.source or "Launch Queue",
+        status="Subscribed"
     )
     db.add(subscriber)
     db.commit()
@@ -46,12 +43,12 @@ def subscribe(
     background_tasks.add_task(
         send_subscriber_confirmation_email,
         subscriber.email,
-        subscriber.bundle or ""
+        ""
     )
     background_tasks.add_task(
         send_admin_new_subscriber_alert_email,
         subscriber.email,
-        subscriber.bundle or "",
+        "",
         total
     )
 
@@ -129,9 +126,9 @@ def send_bulk_email(
     """Dispatch a custom email to all active (or filtered) launch subscribers."""
     from ..mailer import _send, _base_template, GOLD, MUTED, TEXT
 
-    query = db.query(models.Subscriber).filter(models.Subscriber.status == "Active")
+    query = db.query(models.Subscriber).filter(models.Subscriber.status == "Subscribed")
     if payload.bundle_filter:
-        query = query.filter(models.Subscriber.bundle == payload.bundle_filter)
+        query = query.filter(models.Subscriber.source == payload.bundle_filter)
 
     subscribers = query.all()
     if not subscribers:
