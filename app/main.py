@@ -181,6 +181,19 @@ def startup_db_seeding():
             db.commit()
             print("Successfully synchronized PostgreSQL sequences.")
 
+        # 6. Inline schema migrations — safely add missing columns to existing tables
+        from sqlalchemy import text, inspect as sa_inspect
+        inspector = sa_inspect(db.get_bind())
+
+        # subscribers.source — added after initial table creation
+        existing_sub_cols = [c["name"] for c in inspector.get_columns("subscribers")]
+        if "source" not in existing_sub_cols:
+            db.execute(text("ALTER TABLE subscribers ADD COLUMN source VARCHAR DEFAULT 'Launch Queue'"))
+            db.commit()
+            print("Migration: added 'source' column to subscribers table.")
+        else:
+            print("Migration check: 'source' column already exists in subscribers table.")
+
     except Exception as e:
         db.rollback()
         print(f"Error seeding database: {e}")
