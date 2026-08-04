@@ -43,12 +43,12 @@ def subscribe(
     background_tasks.add_task(
         send_subscriber_confirmation_email,
         subscriber.email,
-        ""
+        subscriber.source or "NORV Newsletter"
     )
     background_tasks.add_task(
         send_admin_new_subscriber_alert_email,
         subscriber.email,
-        "",
+        subscriber.source or "NORV Newsletter",
         total
     )
 
