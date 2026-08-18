@@ -7,11 +7,22 @@ from .. import crud, schemas, auth, models
 router = APIRouter(prefix="/api/coupons", tags=["Coupons"])
 
 @router.get("", response_model=List[schemas.CouponOut])
-def list_coupons(
-    db: Session = Depends(get_db),
-    current_user: models.AdminUser = Depends(auth.get_current_user)
-):
+def list_coupons(db: Session = Depends(get_db)):
     return crud.get_coupons(db)
+
+@router.get("/validate/{code}")
+def validate_coupon_code(code: str, db: Session = Depends(get_db)):
+    code_clean = code.strip().upper()
+    coupon = db.query(models.Coupon).filter(models.Coupon.code == code_clean, models.Coupon.status == "Active").first()
+    if not coupon:
+        raise HTTPException(status_code=404, detail="Invalid or expired promo code")
+    return {
+        "valid": True,
+        "code": coupon.code,
+        "type": coupon.type,
+        "value": coupon.value,
+        "discount_percent": coupon.value if coupon.type == "percentage" else 25
+    }
 
 @router.post("", response_model=schemas.CouponOut, status_code=status.HTTP_201_CREATED)
 def create_new_coupon(

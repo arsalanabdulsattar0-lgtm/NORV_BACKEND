@@ -24,8 +24,7 @@ def list_orders(
 @router.get("/{order_id}", response_model=schemas.OrderOut)
 def read_order(
     order_id: str,
-    db: Session = Depends(get_db),
-    current_user: models.AdminUser = Depends(auth.get_current_user)
+    db: Session = Depends(get_db)
 ):
     order = crud.get_order(db, order_id)
     if not order:
