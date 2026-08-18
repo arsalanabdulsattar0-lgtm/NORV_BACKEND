@@ -82,19 +82,7 @@ def startup_db_seeding():
     
     db = SessionLocal()
     try:
-        # 2. Check and clean dummy data
-        # If the database contains the dummy product "Acne Control Face Wash" and total products <= 7,
-        # we consider it dummy data and wipe it out.
-        dummy_check = db.query(models.Product).filter(models.Product.id == 1, models.Product.name == "Acne Control Face Wash").first()
-        if dummy_check and db.query(models.Product).count() <= 7:
-            db.query(models.Review).delete()
-            db.query(models.Order).delete()
-            db.query(models.Coupon).delete()
-            db.query(models.BlogArticle).delete()
-            db.query(models.Product).delete()
-            db.query(models.Category).delete()
-            db.commit()
-            print("Successfully wiped dummy data from the database.")
+        # Database tables created cleanly; automatic wipe disabled to preserve all live products and admin changes permanently.
 
         # 3. Seed Default Admin Users
         user_shopnorv = db.query(models.AdminUser).filter(models.AdminUser.email == "shopnorv@gmail.com").first()
